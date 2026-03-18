@@ -70,7 +70,14 @@
     font-weight: 400;
   }
   .header-right {
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  }
+  .header-badges {
     display: flex; align-items: center; gap: 10px;
+  }
+  .header-version {
+    font-size: 12px; font-weight: 500; color: var(--text-secondary);
+    letter-spacing: 0.03em;
   }
   .badge {
     font-size: 12px; font-weight: 500; padding: 6px 14px;
@@ -371,9 +378,11 @@
       </div>
     </div>
     <div class="header-right">
-      <span class="badge badge-gcp"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="GCP">Google Cloud</span>
-      <span class="badge badge-tf"><img src="https://www.vectorlogo.zone/logos/terraformio/terraformio-icon.svg" alt="Terraform">Terraform + Helm</span>
-      <span class="badge" style="background: var(--bg-elevated); color: var(--text-tertiary); border: 1px solid var(--border-subtle); font-size: 11px; letter-spacing: 0.03em;">v1.0</span>
+      <div class="header-badges">
+        <span class="badge badge-gcp"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="GCP">Google Cloud</span>
+        <span class="badge badge-tf"><img src="https://www.vectorlogo.zone/logos/terraformio/terraformio-icon.svg" alt="Terraform">Terraform + Helm</span>
+      </div>
+      <span class="header-version">Version 1.0 &middot; March 2026</span>
     </div>
   </header>
 
