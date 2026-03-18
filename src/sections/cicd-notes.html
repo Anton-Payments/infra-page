@@ -1,46 +1,92 @@
 <div class="sidebar-section">
-  <div class="sidebar-title">Branch Strategy</div>
-  <p class="sidebar-desc">Linear promotion model. Code flows develop to staging to main. Production and sandbox deploy from the same branch.</p>
+  <div class="sidebar-title">Repository Structure</div>
+  <p class="sidebar-desc">Each service is its own Git repo with its own CI pipeline. A separate deploy repo holds all Helm charts and values.</p>
 
   <details class="sidebar-accordion">
-    <summary>Branch to environment mapping</summary>
+    <summary>Service repos</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">develop &rarr; Staging</div>
-      <div class="sidebar-rule">main &rarr; Production + Sandbox</div>
-      <div class="sidebar-rule-note">Sandbox mirrors production exactly. When code merges to main, both environments deploy simultaneously. This ensures external developers always integrate against the same code running in production.</div>
+      <div class="sidebar-rule">api — Go backend, REST API</div>
+      <div class="sidebar-rule">anton-engine — Go risk/AI engine</div>
+      <div class="sidebar-rule">worker — Same repo as api (shared binary)</div>
+      <div class="sidebar-rule">merchant — Next.js merchant portal</div>
+      <div class="sidebar-rule">operations — Next.js ops portal</div>
+      <div class="sidebar-rule">www — Next.js marketing site</div>
+      <div class="sidebar-rule-note">Each repo has its own GitHub Actions workflow. Pushing to main triggers CI for that service only. Worker shares the api repo but gets its own Helm release.</div>
     </div>
   </details>
 
   <details class="sidebar-accordion">
-    <summary>Pipeline stages</summary>
+    <summary>Deploy repo (GitOps)</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">Lint: golangci-lint, eslint, ruff</div>
-      <div class="sidebar-rule">Test: go test -race, vitest, pytest</div>
-      <div class="sidebar-rule">Build: Docker multi-stage builds</div>
-      <div class="sidebar-rule">Push: Artifact Registry (per-environment)</div>
-      <div class="sidebar-rule">Deploy: Helm upgrade to GKE</div>
-      <div class="sidebar-rule-note">All stages must pass before deploy. Docker images are tagged with git SHA for traceability. Artifact Registry is scanned for vulnerabilities before deployment.</div>
+      <div class="sidebar-rule">Helm charts per service</div>
+      <div class="sidebar-rule">values-prod.yaml, values-staging.yaml, values-sandbox.yaml</div>
+      <div class="sidebar-rule">Image tags updated by CI on successful build</div>
+      <div class="sidebar-rule">ArgoCD watches this repo and auto-syncs</div>
+      <div class="sidebar-rule-note">The deploy repo is the single source of truth for what's running in each environment. Every deploy is a Git commit, giving a full audit trail of who deployed what, when.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">ArgoCD</div>
+  <p class="sidebar-desc">GitOps controller running inside each GKE cluster. The only system with cluster credentials.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Configuration</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">One ArgoCD instance per cluster (prod, staging, sandbox)</div>
+      <div class="sidebar-rule">Auto-sync enabled with self-heal</div>
+      <div class="sidebar-rule">Prune orphaned resources on sync</div>
+      <div class="sidebar-rule">SSO via WorkOS for ArgoCD UI access</div>
+      <div class="sidebar-rule-note">Self-heal means if someone manually changes a resource in the cluster, ArgoCD reverts it to match the deploy repo. This prevents configuration drift.</div>
     </div>
   </details>
 
   <details class="sidebar-accordion">
-    <summary>Rollback procedure</summary>
+    <summary>Rollback strategy</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">Helm rollback to previous revision</div>
-      <div class="sidebar-rule">Previous image always available in Artifact Registry</div>
-      <div class="sidebar-rule">Database migrations are forward-only (no rollback)</div>
-      <div class="sidebar-rule">Canary deploys for production (planned)</div>
-      <div class="sidebar-rule-note">Rollback is a Helm operation, not a git revert. Since migrations are forward-only, breaking schema changes must be deployed as multi-step compatible migrations. This is a hard rule.</div>
+      <div class="sidebar-rule">Automatic rollback if health checks fail</div>
+      <div class="sidebar-rule">Manual rollback: revert the image tag commit in deploy repo</div>
+      <div class="sidebar-rule">ArgoCD UI shows full sync history per application</div>
+      <div class="sidebar-rule">Database migrations are forward-only (never rolled back)</div>
+      <div class="sidebar-rule-note">Rollback is a Git revert, not a kubectl command. Since migrations are forward-only, breaking schema changes must be deployed as multi-step compatible migrations.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Security Boundary</div>
+  <p class="sidebar-desc">Strict separation between CI (GitHub) and CD (ArgoCD).</p>
+
+  <details class="sidebar-accordion">
+    <summary>Credential isolation</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">GitHub Actions authenticates to GCP via Workload Identity Federation</div>
+      <div class="sidebar-rule">GitHub Actions can only push images and update the deploy repo</div>
+      <div class="sidebar-rule">GitHub Actions has zero cluster access</div>
+      <div class="sidebar-rule">ArgoCD has cluster-admin scoped to its namespace</div>
+      <div class="sidebar-rule">No service account keys stored anywhere</div>
+      <div class="sidebar-rule-note">If a GitHub Actions workflow is compromised, the attacker can push a malicious image but cannot deploy it — ArgoCD still requires the deploy repo commit, which has branch protection and required reviews. Defense in depth.</div>
     </div>
   </details>
 
   <details class="sidebar-accordion">
-    <summary>GitHub Actions vs Cloud Build</summary>
+    <summary>Notifications</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">GitHub Actions: lint, test, build, push image</div>
-      <div class="sidebar-rule">Cloud Build: optional for GKE deploy step</div>
-      <div class="sidebar-rule">Workload Identity Federation for keyless auth to GCP</div>
-      <div class="sidebar-rule-note">GitHub Actions handles CI. Deploy to GKE can use either GitHub Actions with Workload Identity Federation (no service account keys) or Cloud Build triggered by Artifact Registry push. Both approaches are keyless.</div>
+      <div class="sidebar-rule">Deploy success/failure posted to Slack</div>
+      <div class="sidebar-rule">ArgoCD sync status in Slack channel</div>
+      <div class="sidebar-rule">CI failures notify via GitHub + Slack</div>
+      <div class="sidebar-rule">Production deploys ping on-call channel</div>
+      <div class="sidebar-rule-note">Slack notifications use ArgoCD Notifications controller. Production deploys are high-visibility — the on-call channel gets notified so the team can watch for issues post-deploy.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Database Migrations</div>
+  <details class="sidebar-accordion">
+    <summary>Pre-deploy strategy</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Kubernetes Job triggered as a Helm pre-upgrade hook</div>
+      <div class="sidebar-rule">Runs golang-migrate against Cloud SQL</div>
+      <div class="sidebar-rule">Forward-only — never edit existing migration files</div>
+      <div class="sidebar-rule">If migration fails, deploy is aborted</div>
+      <div class="sidebar-rule">Only runs on api service deploys</div>
+      <div class="sidebar-rule-note">Migrations must be backwards-compatible with the running code. This allows the old version to keep serving while the migration runs. Breaking changes require a multi-step deploy: migrate first, deploy new code second.</div>
     </div>
   </details>
 </div>

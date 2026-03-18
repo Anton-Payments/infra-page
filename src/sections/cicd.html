@@ -4,48 +4,97 @@
         <div class="tier-title">
           <span class="tier-title-text">Continuous Integration &amp; Deployment</span>
         </div>
-        <span class="tier-meta">Keyless auth via Workload Identity Federation</span>
+        <span class="tier-meta">Per-repo pipelines &middot; GitOps via ArgoCD</span>
       </div>
+
+      <!-- CI Pipeline -->
+      <div class="section-label" style="margin-top:4px;">Continuous Integration (GitHub Actions)</div>
       <div class="pipeline">
         <div class="pipeline-step">
-          <div class="svc-name">GitHub Actions</div>
-          <div class="svc-detail">Build, test, scan, push</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Path-filtered</span>
-            <span class="tag tag-blue">Per-service</span>
-          </div>
+          <div class="svc-name">Lint</div>
+          <div class="svc-detail">golangci-lint, eslint, ruff</div>
         </div>
-
         <div class="pipeline-arrow">
           <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-          <div class="pipeline-label">WIF</div>
         </div>
-
         <div class="pipeline-step">
-          <div class="svc-name">Artifact Registry</div>
-          <div class="svc-detail">Container images</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Vuln scanning</span>
-            <span class="tag tag-blue">Cleanup policy</span>
-          </div>
+          <div class="svc-name">Test</div>
+          <div class="svc-detail">go test -race, vitest, pytest</div>
         </div>
-
         <div class="pipeline-arrow">
           <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-          <div class="pipeline-label">Deploy</div>
         </div>
-
         <div class="pipeline-step">
-          <div class="svc-name">GKE Deploy</div>
-          <div class="svc-detail">kubectl / ArgoCD</div>
+          <div class="svc-name">Security Scan</div>
+          <div class="svc-detail">Dependency audit, SAST</div>
+        </div>
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Build &amp; Push</div>
+          <div class="svc-detail">Docker multi-stage</div>
           <div class="svc-tags">
-            <span class="tag tag-blue">Rolling update</span>
+            <span class="tag tag-blue">Artifact Registry</span>
+            <span class="tag tag-blue">Vuln scan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handoff -->
+      <div class="connector" style="padding: 4px 0;">
+        <div class="connector-line" style="height:20px;"></div>
+        <div class="connector-label">Update image tag in deploy repo</div>
+        <div class="connector-line" style="height:20px;"></div>
+      </div>
+
+      <!-- CD Pipeline -->
+      <div class="section-label">Continuous Deployment (ArgoCD)</div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="svc-name">ArgoCD Sync</div>
+          <div class="svc-detail">Detects deploy repo change</div>
+          <div class="svc-tags">
+            <span class="tag tag-teal">GitOps</span>
+            <span class="tag tag-teal">Auto-sync</span>
+          </div>
+        </div>
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Pre-deploy</div>
+          <div class="svc-detail">DB migration Job (api only)</div>
+          <div class="svc-tags">
+            <span class="tag tag-orange">Forward-only</span>
+            <span class="tag tag-orange">Helm hook</span>
+          </div>
+        </div>
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Rolling Deploy</div>
+          <div class="svc-detail">Helm upgrade &middot; zero-downtime</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Health checks</span>
             <span class="tag tag-blue">Auto-rollback</span>
           </div>
         </div>
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Post-deploy</div>
+          <div class="svc-detail">Smoke test &middot; notify</div>
+          <div class="svc-tags">
+            <span class="tag tag-green">Slack</span>
+          </div>
+        </div>
       </div>
+
       <div class="tier-note">
-        <strong>Branch &rarr; environment mapping:</strong>&ensp;
+        <strong>GitHub Actions never touches the cluster.</strong> CI builds and pushes images, then updates the image tag in the deploy repo. ArgoCD is the only system with cluster credentials. Each service repo (api, anton-engine, merchant, operations, www) has its own CI pipeline. Branch mapping:&ensp;
         <code style="color:var(--accent-green); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">main</code> &rarr; Production + Sandbox&emsp;
         <code style="color:var(--accent-yellow); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">develop</code> &rarr; Staging
       </div>
@@ -53,4 +102,3 @@
 
     <!-- ════════ DIVIDER ════════ -->
     <div class="divider"></div>
-
