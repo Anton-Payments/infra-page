@@ -54,6 +54,19 @@
           </div>
 
           <div class="svc">
+            <span class="traffic-badge traffic-int">internal</span>
+            <div class="svc-name">worker</div>
+            <div class="svc-detail">Go &middot; same binary as api</div>
+            <div class="svc-tags">
+              <span class="tag tag-orange">Background jobs</span>
+              <span class="tag tag-orange">Scheduler</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px;">Frontend Deployments</div>
+        <div class="services-row">
+          <div class="svc">
             <span class="traffic-badge traffic-ext">external</span>
             <div class="svc-name">merchant</div>
             <div class="svc-detail">Next.js &middot; port 3002</div>
@@ -67,7 +80,7 @@
             <div class="svc-name">operations</div>
             <div class="svc-detail">Next.js &middot; port 3001</div>
             <div class="svc-tags">
-              <span class="tag tag-orange">SSR</span>
+              <span class="tag tag-green">SSR</span>
             </div>
           </div>
 
@@ -76,7 +89,7 @@
             <div class="svc-name">www</div>
             <div class="svc-detail">Next.js &middot; port 3000</div>
             <div class="svc-tags">
-              <span class="tag tag-blue">SSR</span>
+              <span class="tag tag-green">SSR</span>
               <span class="tag tag-blue">Sanity CMS</span>
             </div>
           </div>
@@ -98,13 +111,25 @@
           <span class="mtls-arrow">&harr;</span>
           <span class="mtls-node">Cloud SQL</span>
           <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">worker</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Cloud SQL</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">api</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Redis</span>
+          <span class="mtls-sep">&middot;</span>
           <span class="mtls-node">anton-engine</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Redis</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">worker</span>
           <span class="mtls-arrow">&harr;</span>
           <span class="mtls-node">Redis</span>
         </div>
 
         <div class="tier-note">
-          <strong>Network policies enforced:</strong> anton-engine accepts traffic from api only. Both api and anton-engine connect to Cloud SQL (shared database for zero-latency data access). Operations portal restricted to internal IP ranges.
+          <strong>Network policies enforced:</strong> anton-engine accepts traffic from api only. Worker runs the same Go binary as api with <code>--mode=worker</code> — background jobs, scheduled tasks, and webhook delivery. All three backend services (api, anton-engine, worker) connect to Cloud SQL and Redis. Frontends are stateless SSR containers that call the api only. See Architecture Notes for detailed policies.
         </div>
       </div>
     </div>
@@ -115,4 +140,3 @@
       <div class="connector-label">Private VPC Network</div>
       <div class="connector-arrow"></div>
     </div>
-

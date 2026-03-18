@@ -273,6 +273,19 @@
           </div>
 
           <div class="svc">
+            <span class="traffic-badge traffic-int">internal</span>
+            <div class="svc-name">worker</div>
+            <div class="svc-detail">Go &middot; same binary as api</div>
+            <div class="svc-tags">
+              <span class="tag tag-orange">Background jobs</span>
+              <span class="tag tag-orange">Scheduler</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px;">Frontend Deployments</div>
+        <div class="services-row">
+          <div class="svc">
             <span class="traffic-badge traffic-ext">external</span>
             <div class="svc-name">merchant</div>
             <div class="svc-detail">Next.js &middot; port 3002</div>
@@ -286,7 +299,7 @@
             <div class="svc-name">operations</div>
             <div class="svc-detail">Next.js &middot; port 3001</div>
             <div class="svc-tags">
-              <span class="tag tag-orange">SSR</span>
+              <span class="tag tag-green">SSR</span>
             </div>
           </div>
 
@@ -295,7 +308,7 @@
             <div class="svc-name">www</div>
             <div class="svc-detail">Next.js &middot; port 3000</div>
             <div class="svc-tags">
-              <span class="tag tag-blue">SSR</span>
+              <span class="tag tag-green">SSR</span>
               <span class="tag tag-blue">Sanity CMS</span>
             </div>
           </div>
@@ -317,13 +330,25 @@
           <span class="mtls-arrow">&harr;</span>
           <span class="mtls-node">Cloud SQL</span>
           <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">worker</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Cloud SQL</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">api</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Redis</span>
+          <span class="mtls-sep">&middot;</span>
           <span class="mtls-node">anton-engine</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Redis</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">worker</span>
           <span class="mtls-arrow">&harr;</span>
           <span class="mtls-node">Redis</span>
         </div>
 
         <div class="tier-note">
-          <strong>Network policies enforced:</strong> anton-engine accepts traffic from api only. Both api and anton-engine connect to Cloud SQL (shared database for zero-latency data access). Operations portal restricted to internal IP ranges.
+          <strong>Network policies enforced:</strong> anton-engine accepts traffic from api only. Worker runs the same Go binary as api with <code>--mode=worker</code> — background jobs, scheduled tasks, and webhook delivery. All three backend services (api, anton-engine, worker) connect to Cloud SQL and Redis. Frontends are stateless SSR containers that call the api only. See Architecture Notes for detailed policies.
         </div>
       </div>
     </div>
@@ -334,7 +359,6 @@
       <div class="connector-label">Private VPC Network</div>
       <div class="connector-arrow"></div>
     </div>
-
     <!-- ── DATA LAYER ── -->
     <div class="tier">
       <div class="tier-header">
@@ -641,6 +665,37 @@
     </div>
   </details>
 
+  <div class="sidebar-title" style="margin-top: 20px;">Worker Deployment</div>
+  <p class="sidebar-desc">Same Go binary as the API, started with --mode=worker. Runs as a separate Kubernetes Deployment for independent scaling.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Background jobs (29+ types)</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Payout submission and status polling</div>
+      <div class="sidebar-rule">OFAC/sanctions compliance screening</div>
+      <div class="sidebar-rule">Webhook delivery to merchants</div>
+      <div class="sidebar-rule">Batch payout validation and processing</div>
+      <div class="sidebar-rule">FX quote expiry, exchange, and reconciliation</div>
+      <div class="sidebar-rule">Rail health checks and balance sync</div>
+      <div class="sidebar-rule">Settlement and OpenPayD reconciliation</div>
+      <div class="sidebar-rule-note">PostgreSQL-backed queue using SELECT FOR UPDATE SKIP LOCKED. Jobs have 3 retry attempts with exponential backoff. Per-job 2-minute timeout. Stale lock cleaner runs every 60s.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Scheduled tasks</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Daily 00:00 UTC — Payout summary aggregation</div>
+      <div class="sidebar-rule">Daily 02:00 UTC — Session expiry checks</div>
+      <div class="sidebar-rule">Daily 03:00 UTC — Stale account cleanup</div>
+      <div class="sidebar-rule">Daily 06:00 UTC — Merchant review scheduling</div>
+      <div class="sidebar-rule">Every 5 min — FX quote expiry, rail health checks</div>
+      <div class="sidebar-rule">Every 15 min — Rail balance sync, OpenPayD recon</div>
+      <div class="sidebar-rule">Every 30 min — FX reconciliation</div>
+      <div class="sidebar-rule-note">Scheduler uses PostgreSQL advisory locks for leader election. Only one worker pod runs the scheduler at a time, preventing duplicate scheduled jobs across replicas.</div>
+    </div>
+  </details>
+
   <div class="sidebar-title" style="margin-top: 20px;">Anthos Service Mesh</div>
   <p class="sidebar-desc">Istio-based mTLS between all services. No plaintext pod-to-pod traffic.</p>
 
@@ -658,11 +713,12 @@
     <summary>Network policies</summary>
     <div class="accordion-body">
       <div class="sidebar-rule">anton-engine accepts traffic from api only</div>
-      <div class="sidebar-rule">api and anton-engine connect to Cloud SQL</div>
-      <div class="sidebar-rule">anton-engine connects to Redis</div>
-      <div class="sidebar-rule">ops portal restricted to internal IP ranges</div>
+      <div class="sidebar-rule">worker accepts no inbound traffic (outbound only)</div>
+      <div class="sidebar-rule">api, anton-engine, worker all connect to Cloud SQL</div>
+      <div class="sidebar-rule">api, anton-engine, worker all connect to Redis</div>
+      <div class="sidebar-rule">Frontends connect to api only</div>
       <div class="sidebar-rule">Default deny all ingress per namespace</div>
-      <div class="sidebar-rule-note">Network policies enforce least-privilege at the pod level. No service can reach another unless explicitly allowed. This is defense-in-depth on top of mTLS.</div>
+      <div class="sidebar-rule-note">Network policies enforce least-privilege at the pod level. No service can reach another unless explicitly allowed. Worker has no inbound routes — it only pulls jobs from the PostgreSQL queue and pushes results.</div>
     </div>
   </details>
 </div>
