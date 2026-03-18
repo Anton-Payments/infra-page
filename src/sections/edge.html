@@ -26,6 +26,15 @@
         </div>
 
         <div class="svc">
+          <div class="svc-name">Cloud Armor</div>
+          <div class="svc-detail">WAF &middot; Per-subdomain policies</div>
+          <div class="svc-tags">
+            <span class="tag tag-red">OWASP Top 10</span>
+            <span class="tag tag-red">Adaptive Protection</span>
+          </div>
+        </div>
+
+        <div class="svc">
           <div class="svc-name">Cloud CDN</div>
           <div class="svc-detail">Static frontends only</div>
           <div class="svc-tags">
@@ -36,65 +45,8 @@
         </div>
       </div>
 
-      <!-- Cloud Armor per-subdomain policies -->
-      <div style="margin: 20px 24px 0; padding: 20px 24px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 10px;">
-        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-red); margin-bottom: 16px;">Cloud Armor — Per-Subdomain Policies</div>
-        <div style="display: flex; align-items: flex-start; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
-          <span style="flex: 0 0 140px;">Subdomain</span>
-          <span style="flex: 1;">Rules</span>
-        </div>
-
-        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">api.*</span>
-          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
-            <span class="tag tag-red">DDoS</span>
-            <span class="tag tag-red">OWASP Top 10</span>
-            <span class="tag tag-red">JSON body inspection</span>
-            <span class="tag tag-red">Adaptive Protection</span>
-            <span class="tag tag-red">Per-endpoint rate limits</span>
-            <span class="tag tag-red">OFAC geo-block</span>
-            <span class="tag tag-red">Bot management</span>
-            <span class="tag tag-red">Header validation</span>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">app.*</span>
-          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
-            <span class="tag tag-red">DDoS</span>
-            <span class="tag tag-red">OWASP Top 10</span>
-            <span class="tag tag-red">Adaptive Protection</span>
-            <span class="tag tag-red">Rate limit</span>
-            <span class="tag tag-red">OFAC + high-risk geo-block</span>
-            <span class="tag tag-red">WorkOS auth endpoint protection</span>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">ops.*</span>
-          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
-            <span class="tag tag-red">DDoS</span>
-            <span class="tag tag-red">OWASP Top 10</span>
-            <span class="tag tag-red">Adaptive Protection</span>
-            <span class="tag tag-red">Strict rate limit</span>
-            <span class="tag tag-red">Geo-restrict: CA, US, UK only</span>
-            <span class="tag tag-red">WorkOS SSO endpoint protection</span>
-            <span class="tag tag-red">Session-based rate limit</span>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: flex-start; padding: 10px 0;">
-          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">www.*</span>
-          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
-            <span class="tag tag-red">DDoS</span>
-            <span class="tag tag-red">OWASP basics</span>
-            <span class="tag tag-red">Generous rate limit</span>
-          </div>
-        </div>
-      </div>
-
       <div class="tier-note">
-        <strong>Terraform owns this entire layer.</strong> Backend services target GKE NEGs. The Autoneg controller automatically registers and deregisters pod endpoints as they scale. Each subdomain has its own Cloud Armor security policy attached to its backend service. Adaptive Protection is enabled on all policies — Google's ML learns traffic baselines and alerts on anomalies. All policies deploy in preview mode first, then enforce after validation.
+        <strong>Terraform owns this entire layer.</strong> Backend services target GKE NEGs. The Autoneg controller automatically registers and deregisters pod endpoints as they scale. Cloud Armor policies are configured per-subdomain — see Architecture Notes for the full breakdown.
       </div>
     </div>
 
@@ -104,4 +56,3 @@
       <div class="connector-label">Autoneg NEG Registration</div>
       <div class="connector-arrow"></div>
     </div>
-
