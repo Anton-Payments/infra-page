@@ -82,8 +82,8 @@
     content: '';
     position: absolute;
     left: calc(100% - 280px - 12px);
-    top: 0;
-    bottom: 0;
+    top: 32px;
+    bottom: 32px;
     width: 1px;
     background: var(--border-subtle);
   }
