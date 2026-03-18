@@ -24,7 +24,7 @@
         <span class="badge badge-gcp"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="GCP">Google Cloud</span>
         <span class="badge badge-tf"><img src="https://www.vectorlogo.zone/logos/terraformio/terraformio-icon.svg" alt="Terraform">Terraform + Helm</span>
       </div>
-      <span class="header-version">Version 1.5 &middot; March 2026</span>
+      <span class="header-version">Version 2.0 &middot; March 2026</span>
     </div>
   </header>
   <!-- Environment Switcher -->
@@ -154,11 +154,8 @@
 
   <!-- ════════════════ ARCHITECTURE FLOW ════════════════ -->
 
-
-  <!-- ══ Two-column layout: main flow + sidebar notes ══ -->
-  <div class="layout-row">
+  <div class="layout-row section-row section-edge">
     <div class="layout-main">
-      <div class="flow">
     <!-- ── EDGE LAYER ── -->
     <div class="section-label">Traffic Ingress</div>
     <div class="tier">
@@ -199,9 +196,9 @@
           <div class="svc-name">Cloud CDN</div>
           <div class="svc-detail">Static frontends only</div>
           <div class="svc-tags">
-            <span class="tag tag-orange">www</span>
-            <span class="tag tag-orange">merchant</span>
-            <span class="tag tag-orange">ops</span>
+            <span class="tag tag-blue">www</span>
+            <span class="tag tag-blue">merchant</span>
+            <span class="tag tag-blue">ops</span>
           </div>
         </div>
       </div>
@@ -217,6 +214,91 @@
       <div class="connector-label">Autoneg NEG Registration</div>
       <div class="connector-arrow"></div>
     </div>
+    </div>
+    <div class="layout-sidebar">
+<div class="sidebar-section">
+  <div class="sidebar-title">Cloud Armor Policies</div>
+  <p class="sidebar-desc">WAF rules are applied per-subdomain at the load balancer level. Each service gets a tailored policy based on its exposure profile.</p>
+
+  <details class="sidebar-accordion">
+    <summary>www / marketing</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">OWASP Top 10</div>
+      <div class="sidebar-rule">DDoS protection</div>
+      <div class="sidebar-rule">Rate limiting (relaxed)</div>
+      <div class="sidebar-rule-note">Most permissive policy. Public-facing marketing site needs broad global access.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>api.antonpayments.com</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">OWASP Top 10</div>
+      <div class="sidebar-rule">DDoS protection</div>
+      <div class="sidebar-rule">Rate limiting (strict, per-API-key)</div>
+      <div class="sidebar-rule">JSON payload inspection</div>
+      <div class="sidebar-rule">OFAC / sanctioned country geo-block</div>
+      <div class="sidebar-rule">Request size limits</div>
+      <div class="sidebar-rule-note">Merchant API keys are scoped per-merchant. Bot detection active. Strict payload validation.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>merchant.antonpayments.com</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">OWASP Top 10</div>
+      <div class="sidebar-rule">DDoS protection</div>
+      <div class="sidebar-rule">Rate limiting (moderate)</div>
+      <div class="sidebar-rule">OFAC / sanctioned country geo-block</div>
+      <div class="sidebar-rule">High-risk country geo-block</div>
+      <div class="sidebar-rule">Session validation (WorkOS)</div>
+      <div class="sidebar-rule-note">Authenticated merchants only. Geo-restricted to reduce fraud exposure. WorkOS session tokens validated.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>ops.antonpayments.com</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">OWASP Top 10</div>
+      <div class="sidebar-rule">DDoS protection</div>
+      <div class="sidebar-rule">Rate limiting (strict)</div>
+      <div class="sidebar-rule">Country allow-list: CA, US, UK only</div>
+      <div class="sidebar-rule">Session validation (WorkOS)</div>
+      <div class="sidebar-rule">Sensitive action logging</div>
+      <div class="sidebar-rule-note">Internal operations portal. Geo-restricted to known operational countries. All access logged for SOC 2 compliance.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">SSL / TLS Strategy</div>
+  <p class="sidebar-desc">Google-managed certificates with automatic renewal.</p>
+  <details class="sidebar-accordion">
+    <summary>Certificate setup</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Wildcard: *.antonpayments.com</div>
+      <div class="sidebar-rule">Apex + www: antonpayments.com</div>
+      <div class="sidebar-rule">HTTPS enforced (301 redirect)</div>
+      <div class="sidebar-rule">TLS 1.2+ minimum</div>
+      <div class="sidebar-rule-note">Wildcard covers all subdomains (api, merchant, ops). Separate cert for apex/www. Auto-renewed by Google Certificate Manager.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">CDN Caching</div>
+  <p class="sidebar-desc">Static asset caching only. API traffic is never cached.</p>
+  <details class="sidebar-accordion">
+    <summary>Cache rules</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">www: Static assets, JS, CSS, images</div>
+      <div class="sidebar-rule">merchant: Static assets, JS bundles</div>
+      <div class="sidebar-rule">ops: Static assets, JS bundles</div>
+      <div class="sidebar-rule">api: CDN bypassed entirely</div>
+      <div class="sidebar-rule-note">All data requests are real-time. Only build artifacts and static files are cached at the CDN edge.</div>
+    </div>
+  </details>
+</div>
+    </div>
+  </div>
+  <div class="layout-row section-row section-gke">
+    <div class="layout-main">
     <!-- ── GKE CLUSTER ── -->
     <div class="tier">
       <div class="tier-header">
@@ -309,42 +391,23 @@
             <div class="svc-detail">Next.js &middot; port 3000</div>
             <div class="svc-tags">
               <span class="tag tag-green">SSR</span>
-              <span class="tag tag-blue">Sanity CMS</span>
+              <span class="tag tag-purple">Sanity CMS</span>
             </div>
           </div>
         </div>
 
         <!-- mTLS connections -->
         <div class="mtls-bar">
-          <span class="mtls-label">mTLS</span>
-          <span class="mtls-sep">|</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">worker</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">worker</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
+          <div class="mtls-header">Encrypted Service Connections (mTLS)</div>
+          <div class="mtls-grid">
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&harr;</span> <span class="mtls-path-service">anton-engine</span></div>
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+            <div class="mtls-path"><span class="mtls-path-service">anton-engine</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">anton-engine</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+            <div class="mtls-path"><span class="mtls-path-service">worker</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">worker</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+          </div>
         </div>
 
         <div class="tier-note">
@@ -359,348 +422,8 @@
       <div class="connector-label">Private VPC Network</div>
       <div class="connector-arrow"></div>
     </div>
-    <!-- ── DATA LAYER ── -->
-    <div class="tier">
-      <div class="tier-header">
-        <div class="tier-title">
-          <span class="tier-title-text">Data Layer</span>
-        </div>
-        <span class="tier-meta">Private IP only &middot; No public endpoints</span>
-      </div>
-      <div class="services-row">
-        <div class="svc">
-          <div class="svc-name">Cloud SQL</div>
-          <div class="svc-detail">PostgreSQL 16 &middot; Shared DB</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Private IP</span>
-            <span class="tag tag-blue">SSL required</span>
-            <span class="tag tag-blue">PITR backups</span>
-            <span class="tag tag-blue" id="sql-ha-tag">Regional HA</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Memorystore</div>
-          <div class="svc-detail">Redis 7</div>
-          <div class="svc-tags">
-            <span class="tag tag-red">Private IP</span>
-            <span class="tag tag-red">AUTH + TLS</span>
-            <span class="tag tag-red" id="redis-ha-tag">Read replicas</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Basis Theory</div>
-          <div class="svc-detail">Tokenization vault &middot; SaaS</div>
-          <div class="svc-tags">
-            <span class="tag tag-purple">PII vault</span>
-            <span class="tag tag-purple">Card vault</span>
-            <span class="tag tag-purple">Per-merchant isolation</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Secret Manager</div>
-          <div class="svc-detail">Workload Identity</div>
-          <div class="svc-tags">
-            <span class="tag tag-orange">Per-secret IAM</span>
-            <span class="tag tag-orange">Auto-rotation</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Cloud Storage</div>
-          <div class="svc-detail">KYB / KYC docs</div>
-          <div class="svc-tags">
-            <span class="tag tag-green">Retention policy</span>
-            <span class="tag tag-green">Encryption</span>
-          </div>
-        </div>
-      </div>
-      <div class="tier-note">
-        <strong>Zero public surface.</strong> All GCP data services on VPC private networking only. Cloud SQL Auth Proxy runs as a sidecar in api, anton-engine, and worker pods. All three share the same PostgreSQL database. Basis Theory is an external SaaS — the only service that holds raw PII and card data. The core database stores only BT token references, never plaintext sensitive data. See Architecture Notes for details.
-      </div>
-    </div>
-
-    <!-- ════════ DIVIDER ════════ -->
-    <div class="divider"></div>
-    <div class="section-label">CI / CD Pipeline</div>
-    <div class="tier">
-      <div class="tier-header">
-        <div class="tier-title">
-          <span class="tier-title-text">Continuous Integration &amp; Deployment</span>
-        </div>
-        <span class="tier-meta">Per-repo pipelines &middot; GitOps via ArgoCD</span>
-      </div>
-
-      <!-- CI Pipeline -->
-      <div class="section-label" style="margin-top:4px;">Continuous Integration (GitHub Actions)</div>
-      <div class="pipeline">
-        <div class="pipeline-step">
-          <div class="svc-name">Lint</div>
-          <div class="svc-detail">golangci-lint, eslint, ruff</div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Test</div>
-          <div class="svc-detail">go test -race, vitest, pytest</div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Security Scan</div>
-          <div class="svc-detail">Dependency audit, SAST</div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Build &amp; Push</div>
-          <div class="svc-detail">Docker multi-stage</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Artifact Registry</span>
-            <span class="tag tag-blue">Vuln scan</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Handoff -->
-      <div class="connector" style="padding: 4px 0;">
-        <div class="connector-line" style="height:20px;"></div>
-        <div class="connector-label">Update image tag in deploy repo</div>
-        <div class="connector-line" style="height:20px;"></div>
-      </div>
-
-      <!-- CD Pipeline -->
-      <div class="section-label">Continuous Deployment (ArgoCD)</div>
-      <div class="pipeline">
-        <div class="pipeline-step">
-          <div class="svc-name">ArgoCD Sync</div>
-          <div class="svc-detail">Detects deploy repo change</div>
-          <div class="svc-tags">
-            <span class="tag tag-teal">GitOps</span>
-            <span class="tag tag-teal">Auto-sync</span>
-          </div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Pre-deploy</div>
-          <div class="svc-detail">DB migration Job (api only)</div>
-          <div class="svc-tags">
-            <span class="tag tag-orange">Forward-only</span>
-            <span class="tag tag-orange">Helm hook</span>
-          </div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Rolling Deploy</div>
-          <div class="svc-detail">Helm upgrade &middot; zero-downtime</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Health checks</span>
-            <span class="tag tag-blue">Auto-rollback</span>
-          </div>
-        </div>
-        <div class="pipeline-arrow">
-          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
-        </div>
-        <div class="pipeline-step">
-          <div class="svc-name">Post-deploy</div>
-          <div class="svc-detail">Smoke test &middot; notify</div>
-          <div class="svc-tags">
-            <span class="tag tag-green">Slack</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="tier-note">
-        <strong>GitHub Actions never touches the cluster.</strong> CI builds and pushes images, then updates the image tag in the deploy repo. ArgoCD is the only system with cluster credentials. Each service repo (api, anton-engine, merchant, operations, www) has its own CI pipeline. Branch mapping:&ensp;
-        <code style="color:var(--accent-green); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">main</code> &rarr; Production + Sandbox&emsp;
-        <code style="color:var(--accent-yellow); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">develop</code> &rarr; Staging
-      </div>
-    </div>
-
-    <!-- ════════ DIVIDER ════════ -->
-    <div class="divider"></div>
-    <div class="section-label">Observability</div>
-    <div class="tier">
-      <div class="tier-header">
-        <div class="tier-title">
-          <span class="tier-title-text">Monitoring &amp; Logging</span>
-        </div>
-        <span class="tier-meta">Google Cloud Operations Suite &middot; GCP-native</span>
-      </div>
-      <div class="services-row">
-        <div class="svc">
-          <div class="svc-name">Cloud Monitoring</div>
-          <div class="svc-detail">Metrics &amp; dashboards</div>
-          <div class="svc-tags">
-            <span class="tag tag-blue">Uptime checks</span>
-            <span class="tag tag-blue">SLO tracking</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Cloud Logging</div>
-          <div class="svc-detail">Structured JSON logs</div>
-          <div class="svc-tags">
-            <span class="tag tag-green">Log sinks</span>
-            <span class="tag tag-green">Audit trail</span>
-            <span class="tag tag-green">BigQuery export</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Cloud Trace</div>
-          <div class="svc-detail">Distributed tracing</div>
-          <div class="svc-tags">
-            <span class="tag tag-orange">Request tracing</span>
-            <span class="tag tag-orange">Latency analysis</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Cloud Profiler</div>
-          <div class="svc-detail">Continuous profiling</div>
-          <div class="svc-tags">
-            <span class="tag tag-purple">CPU</span>
-            <span class="tag tag-purple">Memory</span>
-            <span class="tag tag-purple">Production-safe</span>
-          </div>
-        </div>
-
-        <div class="svc">
-          <div class="svc-name">Alerting</div>
-          <div class="svc-detail">Multi-channel &middot; error tracking</div>
-          <div class="svc-tags">
-            <span class="tag tag-red">PagerDuty</span>
-            <span class="tag tag-red">Slack</span>
-            <span class="tag tag-red">Error grouping</span>
-            <span class="tag tag-red">Budget alerts</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="tier-note">
-        <strong>Fully GCP-native observability — no third-party APM.</strong> Istio sidecars emit traces and metrics automatically. All application logging is structured JSON (slog in Go, structlog in Python). Logs sink to BigQuery for compliance retention. Uptime checks probe all public endpoints from multiple regions. Per-environment budget alerts track credit burn. See Architecture Notes for alert policies and retention details.
-      </div>
-    </div>
-  <div class="legend">
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#d2e3fc;"></div>
-      Edge / External
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#c8e6c9;"></div>
-      GKE Cluster
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#b2ebe4;"></div>
-      Service Mesh (mTLS)
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#fef3c7;"></div>
-      Managed Data
-    </div>
-    <div class="legend-item">
-      <div class="legend-swatch" style="background:#e5e7ec;"></div>
-      CI/CD
-    </div>
-    <div class="legend-item">
-      <span style="font-size:10.5px; font-weight:600; color:var(--accent-purple); letter-spacing:0.5px;">TF</span>
-      Terraform-managed
-    </div>
-  </div>
-
-      </div>
     </div>
     <div class="layout-sidebar">
-      <div class="sidebar-header">Architecture Notes</div>
-<div class="sidebar-section">
-  <div class="sidebar-title">Cloud Armor Policies</div>
-  <p class="sidebar-desc">WAF rules are applied per-subdomain at the load balancer level. Each service gets a tailored policy based on its exposure profile.</p>
-
-  <details class="sidebar-accordion">
-    <summary>www / marketing</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">OWASP Top 10</div>
-      <div class="sidebar-rule">DDoS protection</div>
-      <div class="sidebar-rule">Rate limiting (relaxed)</div>
-      <div class="sidebar-rule-note">Most permissive policy. Public-facing marketing site needs broad global access.</div>
-    </div>
-  </details>
-
-  <details class="sidebar-accordion">
-    <summary>api.antonpayments.com</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">OWASP Top 10</div>
-      <div class="sidebar-rule">DDoS protection</div>
-      <div class="sidebar-rule">Rate limiting (strict, per-API-key)</div>
-      <div class="sidebar-rule">JSON payload inspection</div>
-      <div class="sidebar-rule">OFAC / sanctioned country geo-block</div>
-      <div class="sidebar-rule">Request size limits</div>
-      <div class="sidebar-rule-note">Merchant API keys are scoped per-merchant. Bot detection active. Strict payload validation.</div>
-    </div>
-  </details>
-
-  <details class="sidebar-accordion">
-    <summary>merchant.antonpayments.com</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">OWASP Top 10</div>
-      <div class="sidebar-rule">DDoS protection</div>
-      <div class="sidebar-rule">Rate limiting (moderate)</div>
-      <div class="sidebar-rule">OFAC / sanctioned country geo-block</div>
-      <div class="sidebar-rule">High-risk country geo-block</div>
-      <div class="sidebar-rule">Session validation (WorkOS)</div>
-      <div class="sidebar-rule-note">Authenticated merchants only. Geo-restricted to reduce fraud exposure. WorkOS session tokens validated.</div>
-    </div>
-  </details>
-
-  <details class="sidebar-accordion">
-    <summary>ops.antonpayments.com</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">OWASP Top 10</div>
-      <div class="sidebar-rule">DDoS protection</div>
-      <div class="sidebar-rule">Rate limiting (strict)</div>
-      <div class="sidebar-rule">Country allow-list: CA, US, UK only</div>
-      <div class="sidebar-rule">Session validation (WorkOS)</div>
-      <div class="sidebar-rule">Sensitive action logging</div>
-      <div class="sidebar-rule-note">Internal operations portal. Geo-restricted to known operational countries. All access logged for SOC 2 compliance.</div>
-    </div>
-  </details>
-
-  <div class="sidebar-title" style="margin-top: 20px;">SSL / TLS Strategy</div>
-  <p class="sidebar-desc">Google-managed certificates with automatic renewal.</p>
-  <details class="sidebar-accordion">
-    <summary>Certificate setup</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">Wildcard: *.antonpayments.com</div>
-      <div class="sidebar-rule">Apex + www: antonpayments.com</div>
-      <div class="sidebar-rule">HTTPS enforced (301 redirect)</div>
-      <div class="sidebar-rule">TLS 1.2+ minimum</div>
-      <div class="sidebar-rule-note">Wildcard covers all subdomains (api, merchant, ops). Separate cert for apex/www. Auto-renewed by Google Certificate Manager.</div>
-    </div>
-  </details>
-
-  <div class="sidebar-title" style="margin-top: 20px;">CDN Caching</div>
-  <p class="sidebar-desc">Static asset caching only. API traffic is never cached.</p>
-  <details class="sidebar-accordion">
-    <summary>Cache rules</summary>
-    <div class="accordion-body">
-      <div class="sidebar-rule">www: Static assets, JS, CSS, images</div>
-      <div class="sidebar-rule">merchant: Static assets, JS bundles</div>
-      <div class="sidebar-rule">ops: Static assets, JS bundles</div>
-      <div class="sidebar-rule">api: CDN bypassed entirely</div>
-      <div class="sidebar-rule-note">All data requests are real-time. Only build artifacts and static files are cached at the CDN edge.</div>
-    </div>
-  </details>
-</div>
 <div class="sidebar-section">
   <div class="sidebar-title">Cluster Configuration</div>
   <p class="sidebar-desc">One GKE Standard cluster per environment. Production is regional (multi-zone) for high availability.</p>
@@ -793,6 +516,77 @@
     </div>
   </details>
 </div>
+    </div>
+  </div>
+  <div class="layout-row section-row section-data">
+    <div class="layout-main">
+    <!-- ── DATA LAYER ── -->
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">Data Layer</span>
+        </div>
+        <span class="tier-meta">Private IP only &middot; No public endpoints</span>
+      </div>
+      <div class="services-row">
+        <div class="svc">
+          <div class="svc-name">Cloud SQL</div>
+          <div class="svc-detail">PostgreSQL 16 &middot; Shared DB</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Private IP</span>
+            <span class="tag tag-blue">SSL required</span>
+            <span class="tag tag-blue">PITR backups</span>
+            <span class="tag tag-blue" id="sql-ha-tag">Regional HA</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Memorystore</div>
+          <div class="svc-detail">Redis 7</div>
+          <div class="svc-tags">
+            <span class="tag tag-teal">Private IP</span>
+            <span class="tag tag-teal">AUTH + TLS</span>
+            <span class="tag tag-teal" id="redis-ha-tag">Read replicas</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Basis Theory</div>
+          <div class="svc-detail">Tokenization vault &middot; SaaS</div>
+          <div class="svc-tags">
+            <span class="tag tag-purple">PII vault</span>
+            <span class="tag tag-purple">Card vault</span>
+            <span class="tag tag-purple">Per-merchant isolation</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Secret Manager</div>
+          <div class="svc-detail">Workload Identity</div>
+          <div class="svc-tags">
+            <span class="tag tag-teal">Per-secret IAM</span>
+            <span class="tag tag-teal">Auto-rotation</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Cloud Storage</div>
+          <div class="svc-detail">KYB / KYC docs</div>
+          <div class="svc-tags">
+            <span class="tag tag-green">Retention policy</span>
+            <span class="tag tag-green">Encryption</span>
+          </div>
+        </div>
+      </div>
+      <div class="tier-note">
+        <strong>Zero public surface.</strong> All GCP data services on VPC private networking only. Cloud SQL Auth Proxy runs as a sidecar in api, anton-engine, and worker pods. All three share the same PostgreSQL database. Basis Theory is an external SaaS — the only service that holds raw PII and card data. The core database stores only BT token references, never plaintext sensitive data. See Architecture Notes for details.
+      </div>
+    </div>
+
+    <!-- ════════ DIVIDER ════════ -->
+    <div class="divider"></div>
+    </div>
+    <div class="layout-sidebar">
 <div class="sidebar-section">
   <div class="sidebar-title">Cloud SQL (PostgreSQL 16)</div>
   <p class="sidebar-desc">Shared database between API, Anton Engine, and Worker for zero-latency data access. Private IP only, no public endpoint.</p>
@@ -893,6 +687,116 @@
     </div>
   </details>
 </div>
+    </div>
+  </div>
+  <div class="layout-row section-row section-cicd">
+    <div class="layout-main">
+    <div class="section-label">CI / CD Pipeline</div>
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">Continuous Integration &amp; Deployment</span>
+        </div>
+        <span class="tier-meta">Per-repo pipelines &middot; GitOps via ArgoCD</span>
+      </div>
+
+      <!-- CI Pipeline -->
+      <div class="section-label" style="margin-top:4px;">Continuous Integration (GitHub Actions)</div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="svc-name">Lint</div>
+          <div class="svc-detail">golangci-lint, eslint, ruff</div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Test</div>
+          <div class="svc-detail">go test -race, vitest, pytest</div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Security Scan</div>
+          <div class="svc-detail">Dependency audit, SAST</div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Build &amp; Push</div>
+          <div class="svc-detail">Docker multi-stage</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Artifact Registry</span>
+            <span class="tag tag-blue">Vuln scan</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Handoff -->
+      <div class="connector" style="padding: 4px 0;">
+        <div class="connector-line" style="height:20px;"></div>
+        <div class="connector-label">Update image tag in deploy repo</div>
+        <div class="connector-line" style="height:20px;"></div>
+      </div>
+
+      <!-- CD Pipeline -->
+      <div class="section-label">Continuous Deployment (ArgoCD)</div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="svc-name">ArgoCD Sync</div>
+          <div class="svc-detail">Detects deploy repo change</div>
+          <div class="svc-tags">
+            <span class="tag tag-teal">GitOps</span>
+            <span class="tag tag-teal">Auto-sync</span>
+          </div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Pre-deploy</div>
+          <div class="svc-detail">DB migration Job (api only)</div>
+          <div class="svc-tags">
+            <span class="tag tag-orange">Forward-only</span>
+            <span class="tag tag-orange">Helm hook</span>
+          </div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Rolling Deploy</div>
+          <div class="svc-detail">Helm upgrade &middot; zero-downtime</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Health checks</span>
+            <span class="tag tag-blue">Auto-rollback</span>
+          </div>
+        </div>
+        <div class="pipeline-arrow">
+          <svg viewBox="0 0 28 12" fill="none"><path d="M0 6h24M20 1l6 5-6 5" stroke="#9ca3b0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="pipeline-step">
+          <div class="svc-name">Post-deploy</div>
+          <div class="svc-detail">Smoke test &middot; notify</div>
+          <div class="svc-tags">
+            <span class="tag tag-green">Slack</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-note">
+        <strong>GitHub Actions never touches the cluster.</strong> CI builds and pushes images, then updates the image tag in the deploy repo. ArgoCD is the only system with cluster credentials. Each service repo (api, anton-engine, merchant, operations, www) has its own CI pipeline. Branch mapping:&ensp;
+        <code style="color:var(--accent-green); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">main</code> &rarr; Production + Sandbox&emsp;
+        <code style="color:var(--accent-yellow); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">develop</code> &rarr; Staging
+      </div>
+    </div>
+
+    <!-- ════════ DIVIDER ════════ -->
+    <div class="divider"></div>
+    </div>
+    <div class="layout-sidebar">
 <div class="sidebar-section">
   <div class="sidebar-title">Repository Structure</div>
   <p class="sidebar-desc">Each service is its own Git repo with its own CI pipeline. A separate deploy repo holds all Helm charts and values.</p>
@@ -985,6 +889,75 @@
     </div>
   </details>
 </div>
+    </div>
+  </div>
+  <div class="layout-row section-row section-monitoring">
+    <div class="layout-main">
+    <div class="section-label">Observability</div>
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">Monitoring &amp; Logging</span>
+        </div>
+        <span class="tier-meta">Google Cloud Operations Suite &middot; GCP-native</span>
+      </div>
+      <div class="services-row">
+        <div class="svc">
+          <div class="svc-name">Cloud Monitoring</div>
+          <div class="svc-detail">Metrics &amp; dashboards</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Uptime checks</span>
+            <span class="tag tag-blue">SLO tracking</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Cloud Logging</div>
+          <div class="svc-detail">Structured JSON logs</div>
+          <div class="svc-tags">
+            <span class="tag tag-green">Log sinks</span>
+            <span class="tag tag-green">Audit trail</span>
+            <span class="tag tag-green">BigQuery export</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Cloud Trace</div>
+          <div class="svc-detail">Distributed tracing</div>
+          <div class="svc-tags">
+            <span class="tag tag-orange">Request tracing</span>
+            <span class="tag tag-orange">Latency analysis</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Cloud Profiler</div>
+          <div class="svc-detail">Continuous profiling</div>
+          <div class="svc-tags">
+            <span class="tag tag-purple">CPU</span>
+            <span class="tag tag-purple">Memory</span>
+            <span class="tag tag-purple">Production-safe</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Alerting</div>
+          <div class="svc-detail">Multi-channel &middot; error tracking</div>
+          <div class="svc-tags">
+            <span class="tag tag-red">PagerDuty</span>
+            <span class="tag tag-red">Slack</span>
+            <span class="tag tag-red">Error grouping</span>
+            <span class="tag tag-red">Budget alerts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-note">
+        <strong>Fully GCP-native observability — no third-party APM.</strong> Istio sidecars emit traces and metrics automatically. All application logging is structured JSON (slog in Go, structlog in Python). Logs sink to BigQuery for compliance retention. Uptime checks probe all public endpoints from multiple regions. Per-environment budget alerts track credit burn. See Architecture Notes for alert policies and retention details.
+      </div>
+    </div>
+    </div>
+    <div class="layout-sidebar">
 <div class="sidebar-section">
   <div class="sidebar-title">Cloud Logging</div>
   <p class="sidebar-desc">Structured JSON logs from all services. GKE automatically ships container stdout/stderr to Cloud Logging.</p>
@@ -1090,8 +1063,34 @@
 </div>
     </div>
   </div>
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#d2e3fc;"></div>
+      Infrastructure
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#e0f7f4;"></div>
+      Security / Encryption
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#fee2e2;"></div>
+      Protection / WAF
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#e6f4ea;"></div>
+      Deploy / Healthy
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#fef3c7;"></div>
+      Operations / Caution
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#f3e8ff;"></div>
+      External / SaaS
+    </div>
+  </div>
   <div class="footer">
-    Anton Payments &middot; Confidential &middot; Infrastructure Architecture v1.5<br>
+    Anton Payments &middot; Confidential &middot; Infrastructure Architecture v2.0<br>
     3 isolated GCP projects &middot; ~$1,242 / month total across all environments
   </div>
 </div>

@@ -90,42 +90,23 @@
             <div class="svc-detail">Next.js &middot; port 3000</div>
             <div class="svc-tags">
               <span class="tag tag-green">SSR</span>
-              <span class="tag tag-blue">Sanity CMS</span>
+              <span class="tag tag-purple">Sanity CMS</span>
             </div>
           </div>
         </div>
 
         <!-- mTLS connections -->
         <div class="mtls-bar">
-          <span class="mtls-label">mTLS</span>
-          <span class="mtls-sep">|</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">worker</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Cloud SQL</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">api</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">anton-engine</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
-          <span class="mtls-sep">&middot;</span>
-          <span class="mtls-node">worker</span>
-          <span class="mtls-arrow">&harr;</span>
-          <span class="mtls-node">Redis</span>
+          <div class="mtls-header">Encrypted Service Connections (mTLS)</div>
+          <div class="mtls-grid">
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&harr;</span> <span class="mtls-path-service">anton-engine</span></div>
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">api</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+            <div class="mtls-path"><span class="mtls-path-service">anton-engine</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">anton-engine</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+            <div class="mtls-path"><span class="mtls-path-service">worker</span> <span class="mtls-path-arrow">&rarr;</span> Cloud SQL</div>
+            <div class="mtls-path"><span class="mtls-path-service">worker</span> <span class="mtls-path-arrow">&rarr;</span> Redis</div>
+          </div>
         </div>
 
         <div class="tier-note">

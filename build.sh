@@ -28,37 +28,28 @@ cat "$DIR/src/header.html" >> "$OUT"
 # Environment switcher (full width, no sidebar)
 cat "$DIR/src/env-switcher.html" >> "$OUT"
 
-# Start the two-column layout
-echo '' >> "$OUT"
-echo '  <!-- ══ Two-column layout: main flow + sidebar notes ══ -->' >> "$OUT"
-echo '  <div class="layout-row">' >> "$OUT"
-echo '    <div class="layout-main">' >> "$OUT"
-echo '      <div class="flow">' >> "$OUT"
-
-# Main content column — all sections stacked
-for section in "${SECTIONS[@]}"; do
-  cat "$DIR/src/sections/${section}.html" >> "$OUT"
-done
-
-# Legend
-cat "$DIR/src/legend.html" >> "$OUT"
-
-echo '      </div>' >> "$OUT"  # close .flow
-echo '    </div>' >> "$OUT"    # close .layout-main
-
-# Sidebar column — all notes stacked
-echo '    <div class="layout-sidebar">' >> "$OUT"
-echo '      <div class="sidebar-header">Architecture Notes</div>' >> "$OUT"
-
+# Each section is its own layout-row with aligned sidebar
 for section in "${SECTIONS[@]}"; do
   NOTES="$DIR/src/sections/${section}-notes.html"
+
+  echo "  <div class=\"layout-row section-row section-${section}\">" >> "$OUT"
+  echo "    <div class=\"layout-main\">" >> "$OUT"
+
+  cat "$DIR/src/sections/${section}.html" >> "$OUT"
+
+  echo "    </div>" >> "$OUT"  # close .layout-main
+
+  echo "    <div class=\"layout-sidebar\">" >> "$OUT"
   if [ -f "$NOTES" ]; then
     cat "$NOTES" >> "$OUT"
   fi
+  echo "    </div>" >> "$OUT"  # close .layout-sidebar
+
+  echo "  </div>" >> "$OUT"    # close .layout-row
 done
 
-echo '    </div>' >> "$OUT"    # close .layout-sidebar
-echo '  </div>' >> "$OUT"      # close .layout-row
+# Legend (full width)
+cat "$DIR/src/legend.html" >> "$OUT"
 
 # Footer
 cat "$DIR/src/footer.html" >> "$OUT"
