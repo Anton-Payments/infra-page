@@ -382,7 +382,7 @@
         <span class="badge badge-gcp"><img src="https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg" alt="GCP">Google Cloud</span>
         <span class="badge badge-tf"><img src="https://www.vectorlogo.zone/logos/terraformio/terraformio-icon.svg" alt="Terraform">Terraform + Helm</span>
       </div>
-      <span class="header-version">Version 1.0 &middot; March 2026</span>
+      <span class="header-version">Version 1.1 &middot; March 2026</span>
     </div>
   </header>
 
@@ -440,7 +440,7 @@
           <div class="spec-card-title">Security &amp; Deploy</div>
           <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
           <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">main</span></div>
-          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Full WAF + OFAC</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
           <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Enabled</span></div>
           <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
           <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$780</span></div>
@@ -471,7 +471,7 @@
           <div class="spec-card-title">Security &amp; Deploy</div>
           <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
           <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">develop</span></div>
-          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Basic WAF</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
           <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Disabled</span></div>
           <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
           <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$262</span></div>
@@ -502,7 +502,7 @@
           <div class="spec-card-title">Security &amp; Deploy</div>
           <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
           <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">main</span></div>
-          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Full WAF + OFAC</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
           <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Enabled</span></div>
           <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
           <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$200</span></div>
@@ -542,19 +542,8 @@
         </div>
 
         <div class="svc">
-          <div class="svc-name">Cloud Armor</div>
-          <div class="svc-detail">WAF Policy</div>
-          <div class="svc-tags">
-            <span class="tag tag-red">DDoS</span>
-            <span class="tag tag-red">OWASP</span>
-            <span class="tag tag-red">Rate limit</span>
-            <span class="tag tag-red">OFAC geo-block</span>
-          </div>
-        </div>
-
-        <div class="svc">
           <div class="svc-name">Cloud CDN</div>
-          <div class="svc-detail">Static frontends</div>
+          <div class="svc-detail">Static frontends only</div>
           <div class="svc-tags">
             <span class="tag tag-orange">www</span>
             <span class="tag tag-orange">merchant</span>
@@ -562,8 +551,66 @@
           </div>
         </div>
       </div>
+
+      <!-- Cloud Armor per-subdomain policies -->
+      <div style="margin: 20px 24px 0; padding: 20px 24px; background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 10px;">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-red); margin-bottom: 16px;">Cloud Armor — Per-Subdomain Policies</div>
+        <div style="display: flex; align-items: flex-start; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);">
+          <span style="flex: 0 0 140px;">Subdomain</span>
+          <span style="flex: 1;">Rules</span>
+        </div>
+
+        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">api.*</span>
+          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
+            <span class="tag tag-red">DDoS</span>
+            <span class="tag tag-red">OWASP Top 10</span>
+            <span class="tag tag-red">JSON body inspection</span>
+            <span class="tag tag-red">Adaptive Protection</span>
+            <span class="tag tag-red">Per-endpoint rate limits</span>
+            <span class="tag tag-red">OFAC geo-block</span>
+            <span class="tag tag-red">Bot management</span>
+            <span class="tag tag-red">Header validation</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">app.*</span>
+          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
+            <span class="tag tag-red">DDoS</span>
+            <span class="tag tag-red">OWASP Top 10</span>
+            <span class="tag tag-red">Adaptive Protection</span>
+            <span class="tag tag-red">Rate limit</span>
+            <span class="tag tag-red">OFAC + high-risk geo-block</span>
+            <span class="tag tag-red">WorkOS auth endpoint protection</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">ops.*</span>
+          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
+            <span class="tag tag-red">DDoS</span>
+            <span class="tag tag-red">OWASP Top 10</span>
+            <span class="tag tag-red">Adaptive Protection</span>
+            <span class="tag tag-red">Strict rate limit</span>
+            <span class="tag tag-red">Geo-restrict: CA, US, UK only</span>
+            <span class="tag tag-red">WorkOS SSO endpoint protection</span>
+            <span class="tag tag-red">Session-based rate limit</span>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: flex-start; padding: 10px 0;">
+          <span style="flex: 0 0 140px; font-size: 13px; font-weight: 600; color: var(--text-primary);">www.*</span>
+          <div style="flex: 1; display: flex; flex-wrap: wrap; gap: 5px;">
+            <span class="tag tag-red">DDoS</span>
+            <span class="tag tag-red">OWASP basics</span>
+            <span class="tag tag-red">Generous rate limit</span>
+          </div>
+        </div>
+      </div>
+
       <div class="tier-note">
-        <strong>Terraform owns this entire layer.</strong> Backend services target GKE NEGs. The Autoneg controller automatically registers and deregisters pod endpoints as they scale.
+        <strong>Terraform owns this entire layer.</strong> Backend services target GKE NEGs. The Autoneg controller automatically registers and deregisters pod endpoints as they scale. Each subdomain has its own Cloud Armor security policy attached to its backend service. Adaptive Protection is enabled on all policies — Google's ML learns traffic baselines and alerts on anomalies. All policies deploy in preview mode first, then enforce after validation.
       </div>
     </div>
 
@@ -885,7 +932,7 @@
   </div>
 
   <div class="footer">
-    Anton Payments &middot; Confidential &middot; Infrastructure Architecture v1.0<br>
+    Anton Payments &middot; Confidential &middot; Infrastructure Architecture v1.1<br>
     3 isolated GCP projects &middot; ~$1,242 / month total across all environments
   </div>
 
