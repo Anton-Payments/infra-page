@@ -1,0 +1,56 @@
+    <!-- ── DATA LAYER ── -->
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">Data Layer</span>
+        </div>
+        <span class="tier-meta">Private IP only &middot; No public endpoints</span>
+      </div>
+      <div class="services-row">
+        <div class="svc" style="max-width:240px;">
+          <div class="svc-name">Cloud SQL</div>
+          <div class="svc-detail">PostgreSQL 16 &middot; Shared DB</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Private IP</span>
+            <span class="tag tag-blue">SSL required</span>
+            <span class="tag tag-blue">PITR backups</span>
+            <span class="tag tag-blue" id="sql-ha-tag">Regional HA</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Memorystore</div>
+          <div class="svc-detail">Redis 7</div>
+          <div class="svc-tags">
+            <span class="tag tag-red">Private IP</span>
+            <span class="tag tag-red">AUTH + TLS</span>
+            <span class="tag tag-red" id="redis-ha-tag">Read replicas</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Secret Manager</div>
+          <div class="svc-detail">Workload Identity</div>
+          <div class="svc-tags">
+            <span class="tag tag-orange">Per-secret IAM</span>
+            <span class="tag tag-orange">Auto-rotation</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Cloud Storage</div>
+          <div class="svc-detail">KYB / KYC docs</div>
+          <div class="svc-tags">
+            <span class="tag tag-green">Retention policy</span>
+            <span class="tag tag-green">Encryption</span>
+          </div>
+        </div>
+      </div>
+      <div class="tier-note">
+        <strong>Zero public surface.</strong> All data services on VPC private networking only. Cloud SQL Auth Proxy runs as a sidecar in api and anton-engine pods. Both services share the same PostgreSQL database to eliminate inter-service data transfer latency.
+      </div>
+    </div>
+
+    <!-- ════════ DIVIDER ════════ -->
+    <div class="divider"></div>
+

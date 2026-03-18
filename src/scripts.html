@@ -1,0 +1,38 @@
+<script>
+const configs = {
+  prod: {
+    domain: 'antonpayments.com',
+    badge: 'gke-anton-prod',
+    meta: 'Regional \u00b7 e2-standard-4 \u00b7 2\u20135 nodes \u00b7 Workload Identity',
+    sqlHA: 'Regional HA',
+    redisHA: 'Read replicas',
+  },
+  staging: {
+    domain: 'antonpayments.build',
+    badge: 'gke-anton-staging',
+    meta: 'Zonal \u00b7 e2-standard-2 \u00b7 1\u20133 nodes \u00b7 Spot VMs \u00b7 Workload Identity',
+    sqlHA: 'No HA',
+    redisHA: 'No HA',
+  },
+  sandbox: {
+    domain: 'antonpayments.dev',
+    badge: 'gke-anton-sandbox',
+    meta: 'Zonal \u00b7 e2-standard-2 \u00b7 1\u20132 nodes \u00b7 Spot VMs \u00b7 Workload Identity',
+    sqlHA: 'No HA',
+    redisHA: 'No HA',
+  }
+};
+
+function switchEnv(env, el) {
+  document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.env-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + env).classList.add('active');
+  const c = configs[env];
+  document.getElementById('dns-domain').textContent = c.domain;
+  document.getElementById('cluster-badge').textContent = c.badge;
+  document.getElementById('cluster-meta').textContent = c.meta;
+  document.getElementById('sql-ha-tag').textContent = c.sqlHA;
+  document.getElementById('redis-ha-tag').textContent = c.redisHA;
+}
+</script>

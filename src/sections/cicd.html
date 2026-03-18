@@ -1,0 +1,56 @@
+    <div class="section-label">CI / CD Pipeline</div>
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">Continuous Integration &amp; Deployment</span>
+        </div>
+        <span class="tier-meta">Keyless auth via Workload Identity Federation</span>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="svc-name">GitHub Actions</div>
+          <div class="svc-detail">Build, test, scan, push</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Path-filtered</span>
+            <span class="tag tag-blue">Per-service</span>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+          <div class="pipeline-label">WIF</div>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="svc-name">Artifact Registry</div>
+          <div class="svc-detail">Container images</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Vuln scanning</span>
+            <span class="tag tag-blue">Cleanup policy</span>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">
+          <span style="font-size:18px; color:var(--border-strong);">&rarr;</span>
+          <div class="pipeline-label">Deploy</div>
+        </div>
+
+        <div class="pipeline-step">
+          <div class="svc-name">GKE Deploy</div>
+          <div class="svc-detail">kubectl / ArgoCD</div>
+          <div class="svc-tags">
+            <span class="tag tag-blue">Rolling update</span>
+            <span class="tag tag-blue">Auto-rollback</span>
+          </div>
+        </div>
+      </div>
+      <div class="tier-note">
+        <strong>Branch &rarr; environment mapping:</strong>&ensp;
+        <code style="color:var(--accent-green); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">main</code> &rarr; Production + Sandbox&emsp;
+        <code style="color:var(--accent-yellow); font-weight:600; font-family:'Switzer',system-ui,sans-serif;">develop</code> &rarr; Staging
+      </div>
+    </div>
+
+    <!-- ════════ DIVIDER ════════ -->
+    <div class="divider"></div>
+

@@ -1,0 +1,46 @@
+<div class="sidebar-section">
+  <div class="sidebar-title">Branch Strategy</div>
+  <p class="sidebar-desc">Linear promotion model. Code flows develop to staging to main. Production and sandbox deploy from the same branch.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Branch to environment mapping</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">develop &rarr; Staging</div>
+      <div class="sidebar-rule">main &rarr; Production + Sandbox</div>
+      <div class="sidebar-rule-note">Sandbox mirrors production exactly. When code merges to main, both environments deploy simultaneously. This ensures external developers always integrate against the same code running in production.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Pipeline stages</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Lint: golangci-lint, eslint, ruff</div>
+      <div class="sidebar-rule">Test: go test -race, vitest, pytest</div>
+      <div class="sidebar-rule">Build: Docker multi-stage builds</div>
+      <div class="sidebar-rule">Push: Artifact Registry (per-environment)</div>
+      <div class="sidebar-rule">Deploy: Helm upgrade to GKE</div>
+      <div class="sidebar-rule-note">All stages must pass before deploy. Docker images are tagged with git SHA for traceability. Artifact Registry is scanned for vulnerabilities before deployment.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Rollback procedure</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Helm rollback to previous revision</div>
+      <div class="sidebar-rule">Previous image always available in Artifact Registry</div>
+      <div class="sidebar-rule">Database migrations are forward-only (no rollback)</div>
+      <div class="sidebar-rule">Canary deploys for production (planned)</div>
+      <div class="sidebar-rule-note">Rollback is a Helm operation, not a git revert. Since migrations are forward-only, breaking schema changes must be deployed as multi-step compatible migrations. This is a hard rule.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>GitHub Actions vs Cloud Build</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">GitHub Actions: lint, test, build, push image</div>
+      <div class="sidebar-rule">Cloud Build: optional for GKE deploy step</div>
+      <div class="sidebar-rule">Workload Identity Federation for keyless auth to GCP</div>
+      <div class="sidebar-rule-note">GitHub Actions handles CI. Deploy to GKE can use either GitHub Actions with Workload Identity Federation (no service account keys) or Cloud Build triggered by Artifact Registry push. Both approaches are keyless.</div>
+    </div>
+  </details>
+</div>

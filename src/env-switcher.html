@@ -1,0 +1,127 @@
+  <!-- Environment Switcher -->
+  <div class="env-switcher">
+    <div class="env-btn active" onclick="switchEnv('prod', this)">
+      <span class="env-dot env-dot-prod"></span>
+      <div class="env-btn-content">
+        <span class="env-btn-name">Production</span>
+        <span class="env-btn-domain">antonpayments.com</span>
+        <span class="env-btn-desc">Live environment serving real merchants and processing real transactions</span>
+      </div>
+    </div>
+    <div class="env-btn" onclick="switchEnv('staging', this)">
+      <span class="env-dot env-dot-staging"></span>
+      <div class="env-btn-content">
+        <span class="env-btn-name">Staging</span>
+        <span class="env-btn-domain">antonpayments.build</span>
+        <span class="env-btn-desc">Internal testing for the Anton team before promoting changes to production</span>
+      </div>
+    </div>
+    <div class="env-btn" onclick="switchEnv('sandbox', this)">
+      <span class="env-dot env-dot-sandbox"></span>
+      <div class="env-btn-content">
+        <span class="env-btn-name">Sandbox</span>
+        <span class="env-btn-domain">antonpayments.dev</span>
+        <span class="env-btn-desc">Production mirror for external developers to build and test integrations</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Environment Spec Panels -->
+  <div class="env-specs">
+    <div class="env-panel active" id="panel-prod">
+      <div class="spec-grid">
+        <div class="spec-card">
+          <div class="spec-card-title">Compute</div>
+          <div class="spec-row"><span class="spec-key">GCP Project</span><span class="spec-val">antonpayments-prod</span></div>
+          <div class="spec-row"><span class="spec-key">Cluster Type</span><span class="spec-val">Regional (multi-zone)</span></div>
+          <div class="spec-row"><span class="spec-key">Node Pool</span><span class="spec-val">e2-standard-4</span></div>
+          <div class="spec-row"><span class="spec-key">Autoscaling</span><span class="spec-val">2 – 5 nodes</span></div>
+          <div class="spec-row"><span class="spec-key">Spot VMs</span><span class="spec-val">No</span></div>
+          <div class="spec-row"><span class="spec-key">Min Replicas</span><span class="spec-val">2 per service</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Data</div>
+          <div class="spec-row"><span class="spec-key">Cloud SQL</span><span class="spec-val">db-custom-2-7680</span></div>
+          <div class="spec-row"><span class="spec-key">SQL HA</span><span class="spec-val">Regional failover</span></div>
+          <div class="spec-row"><span class="spec-key">Redis</span><span class="spec-val">Standard (2 GB)</span></div>
+          <div class="spec-row"><span class="spec-key">Redis HA</span><span class="spec-val">Read replicas</span></div>
+          <div class="spec-row"><span class="spec-key">Backups</span><span class="spec-val">14-day PITR</span></div>
+          <div class="spec-row"><span class="spec-key">Deletion Protection</span><span class="spec-val">Enabled</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Security &amp; Deploy</div>
+          <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
+          <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">main</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
+          <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Enabled</span></div>
+          <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
+          <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$780</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="env-panel" id="panel-staging">
+      <div class="spec-grid">
+        <div class="spec-card">
+          <div class="spec-card-title">Compute</div>
+          <div class="spec-row"><span class="spec-key">GCP Project</span><span class="spec-val">antonpayments-staging</span></div>
+          <div class="spec-row"><span class="spec-key">Cluster Type</span><span class="spec-val">Zonal</span></div>
+          <div class="spec-row"><span class="spec-key">Node Pool</span><span class="spec-val">e2-standard-2</span></div>
+          <div class="spec-row"><span class="spec-key">Autoscaling</span><span class="spec-val">1 – 3 nodes</span></div>
+          <div class="spec-row"><span class="spec-key">Spot VMs</span><span class="spec-val">Yes</span></div>
+          <div class="spec-row"><span class="spec-key">Min Replicas</span><span class="spec-val">1 per service</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Data</div>
+          <div class="spec-row"><span class="spec-key">Cloud SQL</span><span class="spec-val">db-custom-1-3840</span></div>
+          <div class="spec-row"><span class="spec-key">SQL HA</span><span class="spec-val">No</span></div>
+          <div class="spec-row"><span class="spec-key">Redis</span><span class="spec-val">Basic (1 GB)</span></div>
+          <div class="spec-row"><span class="spec-key">Redis HA</span><span class="spec-val">No</span></div>
+          <div class="spec-row"><span class="spec-key">Backups</span><span class="spec-val">7-day PITR</span></div>
+          <div class="spec-row"><span class="spec-key">Deletion Protection</span><span class="spec-val">Enabled</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Security &amp; Deploy</div>
+          <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
+          <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">develop</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
+          <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Disabled</span></div>
+          <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
+          <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$262</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="env-panel" id="panel-sandbox">
+      <div class="spec-grid">
+        <div class="spec-card">
+          <div class="spec-card-title">Compute</div>
+          <div class="spec-row"><span class="spec-key">GCP Project</span><span class="spec-val">antonpayments-sandbox</span></div>
+          <div class="spec-row"><span class="spec-key">Cluster Type</span><span class="spec-val">Zonal</span></div>
+          <div class="spec-row"><span class="spec-key">Node Pool</span><span class="spec-val">e2-standard-2</span></div>
+          <div class="spec-row"><span class="spec-key">Autoscaling</span><span class="spec-val">1 – 2 nodes</span></div>
+          <div class="spec-row"><span class="spec-key">Spot VMs</span><span class="spec-val">Yes</span></div>
+          <div class="spec-row"><span class="spec-key">Min Replicas</span><span class="spec-val">1 per service</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Data</div>
+          <div class="spec-row"><span class="spec-key">Cloud SQL</span><span class="spec-val">db-f1-micro</span></div>
+          <div class="spec-row"><span class="spec-key">SQL HA</span><span class="spec-val">No</span></div>
+          <div class="spec-row"><span class="spec-key">Redis</span><span class="spec-val">Basic (1 GB)</span></div>
+          <div class="spec-row"><span class="spec-key">Redis HA</span><span class="spec-val">No</span></div>
+          <div class="spec-row"><span class="spec-key">Backups</span><span class="spec-val">3-day</span></div>
+          <div class="spec-row"><span class="spec-key">Deletion Protection</span><span class="spec-val">No</span></div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-card-title">Security &amp; Deploy</div>
+          <div class="spec-row"><span class="spec-key">Auth</span><span class="spec-val">WorkOS JWT</span></div>
+          <div class="spec-row"><span class="spec-key">Deploy Branch</span><span class="spec-val">main</span></div>
+          <div class="spec-row"><span class="spec-key">Cloud Armor</span><span class="spec-val">Per-subdomain policies</span></div>
+          <div class="spec-row"><span class="spec-key">CDN</span><span class="spec-val">Enabled</span></div>
+          <div class="spec-row"><span class="spec-key">Service Mesh</span><span class="spec-val">ASM (mTLS)</span></div>
+          <div class="spec-row"><span class="spec-key">Est. Monthly</span><span class="spec-val">~$200</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ARCHITECTURE FLOW ════════════════ -->
+

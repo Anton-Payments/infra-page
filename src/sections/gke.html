@@ -1,0 +1,118 @@
+    <!-- ── GKE CLUSTER ── -->
+    <div class="tier">
+      <div class="tier-header">
+        <div class="tier-title">
+          <span class="tier-title-text">GKE Cluster</span>
+          <span class="badge badge-gcp" style="font-size:10.5px; padding:3px 8px;" id="cluster-badge">gke-anton-prod</span>
+        </div>
+        <span class="tier-meta" id="cluster-meta">Regional &middot; e2-standard-4 &middot; 2–5 nodes &middot; Workload Identity</span>
+      </div>
+
+      <!-- ── ISTIO / ASM MESH ── -->
+      <div class="tier tier-nested">
+        <div class="tier-header">
+          <div class="tier-title">
+            <span class="tier-title-text" style="color:var(--accent-teal);">Anthos Service Mesh (Istio)</span>
+          </div>
+          <span class="tier-meta">Mutual TLS &middot; L7 traffic policies &middot; Observability</span>
+        </div>
+
+        <!-- Istio Gateway -->
+        <div class="services-row" style="margin-bottom:20px;">
+          <div class="svc" style="max-width:280px; border-color:#b2ebe4;">
+            <div class="svc-name">Istio Ingress Gateway</div>
+            <div class="svc-detail">External traffic entry point</div>
+            <div class="svc-tags">
+              <span class="tag tag-teal">TLS termination</span>
+              <span class="tag tag-teal">Route rules</span>
+              <span class="tag tag-teal">Traffic splitting</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Workloads -->
+        <div class="section-label" style="margin-top:8px;">Kubernetes Deployments</div>
+        <div class="services-row">
+          <div class="svc">
+            <span class="traffic-badge traffic-ext">external</span>
+            <div class="svc-name">api</div>
+            <div class="svc-detail">Go &middot; port 8080</div>
+            <div class="svc-tags">
+              <span class="tag tag-blue">HPA</span>
+              <span class="tag tag-blue">PDB</span>
+            </div>
+          </div>
+
+          <div class="svc">
+            <span class="traffic-badge traffic-int">internal</span>
+            <div class="svc-name">anton-engine</div>
+            <div class="svc-detail">Go &middot; port 8082</div>
+            <div class="svc-tags">
+              <span class="tag tag-purple">HPA</span>
+              <span class="tag tag-purple">Risk scoring</span>
+            </div>
+          </div>
+
+          <div class="svc">
+            <span class="traffic-badge traffic-ext">external</span>
+            <div class="svc-name">merchant</div>
+            <div class="svc-detail">Next.js &middot; port 3002</div>
+            <div class="svc-tags">
+              <span class="tag tag-green">SSR</span>
+            </div>
+          </div>
+
+          <div class="svc">
+            <span class="traffic-badge traffic-ext">external</span>
+            <div class="svc-name">operations</div>
+            <div class="svc-detail">Next.js &middot; port 3001</div>
+            <div class="svc-tags">
+              <span class="tag tag-orange">SSR</span>
+            </div>
+          </div>
+
+          <div class="svc">
+            <span class="traffic-badge traffic-ext">external</span>
+            <div class="svc-name">www</div>
+            <div class="svc-detail">Next.js &middot; port 3000</div>
+            <div class="svc-tags">
+              <span class="tag tag-blue">SSR</span>
+              <span class="tag tag-blue">Sanity CMS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- mTLS connections -->
+        <div class="mtls-bar">
+          <span class="mtls-label">mTLS</span>
+          <span class="mtls-sep">|</span>
+          <span class="mtls-node">api</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">anton-engine</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">api</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Cloud SQL</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">anton-engine</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Cloud SQL</span>
+          <span class="mtls-sep">&middot;</span>
+          <span class="mtls-node">anton-engine</span>
+          <span class="mtls-arrow">&harr;</span>
+          <span class="mtls-node">Redis</span>
+        </div>
+
+        <div class="tier-note">
+          <strong>Network policies enforced:</strong> anton-engine accepts traffic from api only. Both api and anton-engine connect to Cloud SQL (shared database for zero-latency data access). Operations portal restricted to internal IP ranges.
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector: GKE → Data -->
+    <div class="connector">
+      <div class="connector-line"></div>
+      <div class="connector-label">Private VPC Network</div>
+      <div class="connector-arrow"></div>
+    </div>
+

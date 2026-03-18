@@ -1,0 +1,60 @@
+<div class="sidebar-section">
+  <div class="sidebar-title">Cluster Configuration</div>
+  <p class="sidebar-desc">One GKE Standard cluster per environment. Production is regional (multi-zone) for high availability.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Node pool strategy</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Production: e2-standard-4, 2-5 nodes, on-demand</div>
+      <div class="sidebar-rule">Staging: e2-standard-2, 1-3 nodes, Spot VMs</div>
+      <div class="sidebar-rule">Sandbox: e2-standard-2, 1-2 nodes, Spot VMs</div>
+      <div class="sidebar-rule-note">Spot VMs save ~70% on non-production. PodDisruptionBudgets handle preemptions gracefully. Production never uses Spot.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Workload Identity</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Each service has a dedicated GCP Service Account</div>
+      <div class="sidebar-rule">Kubernetes SA bound to GCP SA via Workload Identity</div>
+      <div class="sidebar-rule">No service account keys stored anywhere</div>
+      <div class="sidebar-rule">Least-privilege IAM per service</div>
+      <div class="sidebar-rule-note">Workload Identity eliminates the need for exported JSON keys. Pods authenticate to GCP APIs using their bound identity. This is the GCP-recommended approach and satisfies SOC 2 CC6.1 (logical access).</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Autoscaling</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">HPA: CPU and memory thresholds per deployment</div>
+      <div class="sidebar-rule">Cluster Autoscaler: scales node pool within min/max bounds</div>
+      <div class="sidebar-rule">PDBs: minAvailable=1 for all production services</div>
+      <div class="sidebar-rule-note">Production maintains 2 minimum replicas per service for zero-downtime deploys. HPA scales pods first, Cluster Autoscaler adds nodes if pod scheduling fails.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Anthos Service Mesh</div>
+  <p class="sidebar-desc">Istio-based mTLS between all services. No plaintext pod-to-pod traffic.</p>
+
+  <details class="sidebar-accordion">
+    <summary>mTLS enforcement</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">STRICT mode: all traffic must be mutual TLS</div>
+      <div class="sidebar-rule">Automatic certificate rotation</div>
+      <div class="sidebar-rule">Service-to-service identity verification</div>
+      <div class="sidebar-rule-note">Satisfies PCI DSS Req 4.1 (encrypt data in transit) and SOC 2 CC6.7 (transmission security). Every inter-service call is encrypted and authenticated.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Network policies</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">anton-engine accepts traffic from api only</div>
+      <div class="sidebar-rule">api and anton-engine connect to Cloud SQL</div>
+      <div class="sidebar-rule">anton-engine connects to Redis</div>
+      <div class="sidebar-rule">ops portal restricted to internal IP ranges</div>
+      <div class="sidebar-rule">Default deny all ingress per namespace</div>
+      <div class="sidebar-rule-note">Network policies enforce least-privilege at the pod level. No service can reach another unless explicitly allowed. This is defense-in-depth on top of mTLS.</div>
+    </div>
+  </details>
+</div>
