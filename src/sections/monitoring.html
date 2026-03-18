@@ -4,7 +4,7 @@
         <div class="tier-title">
           <span class="tier-title-text">Monitoring &amp; Logging</span>
         </div>
-        <span class="tier-meta">Google Cloud Operations Suite</span>
+        <span class="tier-meta">Google Cloud Operations Suite &middot; GCP-native</span>
       </div>
       <div class="services-row">
         <div class="svc">
@@ -18,10 +18,11 @@
 
         <div class="svc">
           <div class="svc-name">Cloud Logging</div>
-          <div class="svc-detail">Structured logs</div>
+          <div class="svc-detail">Structured JSON logs</div>
           <div class="svc-tags">
             <span class="tag tag-green">Log sinks</span>
             <span class="tag tag-green">Audit trail</span>
+            <span class="tag tag-green">BigQuery export</span>
           </div>
         </div>
 
@@ -35,15 +36,28 @@
         </div>
 
         <div class="svc">
+          <div class="svc-name">Cloud Profiler</div>
+          <div class="svc-detail">Continuous profiling</div>
+          <div class="svc-tags">
+            <span class="tag tag-purple">CPU</span>
+            <span class="tag tag-purple">Memory</span>
+            <span class="tag tag-purple">Production-safe</span>
+          </div>
+        </div>
+
+        <div class="svc">
           <div class="svc-name">Alerting</div>
-          <div class="svc-detail">Multi-channel</div>
+          <div class="svc-detail">Multi-channel &middot; error tracking</div>
           <div class="svc-tags">
             <span class="tag tag-red">PagerDuty</span>
             <span class="tag tag-red">Slack</span>
+            <span class="tag tag-red">Error grouping</span>
             <span class="tag tag-red">Budget alerts</span>
           </div>
         </div>
       </div>
+
+      <div class="tier-note">
+        <strong>Fully GCP-native observability — no third-party APM.</strong> Istio sidecars emit traces and metrics automatically. All application logging is structured JSON (slog in Go, structlog in Python). Logs sink to BigQuery for compliance retention. Uptime checks probe all public endpoints from multiple regions. Per-environment budget alerts track credit burn. See Architecture Notes for alert policies and retention details.
+      </div>
     </div>
-
-

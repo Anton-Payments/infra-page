@@ -27,15 +27,26 @@
   <p class="sidebar-desc">Metrics, uptime checks, and alerting. GKE metrics are automatically collected.</p>
 
   <details class="sidebar-accordion">
-    <summary>Alerting policies</summary>
+    <summary>Uptime checks</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">Uptime checks: all external endpoints (5 min interval)</div>
-      <div class="sidebar-rule">Error rate: alert if 5xx &gt; 1% over 5 minutes</div>
-      <div class="sidebar-rule">Latency: alert if p99 &gt; 2s over 5 minutes</div>
-      <div class="sidebar-rule">Pod restarts: alert if &gt; 3 restarts in 10 minutes</div>
-      <div class="sidebar-rule">Database: CPU &gt; 80%, connections &gt; 80% max</div>
+      <div class="sidebar-rule">All public endpoints probed every 5 minutes</div>
+      <div class="sidebar-rule">Probed from multiple GCP regions simultaneously</div>
+      <div class="sidebar-rule">HTTPS only — validates SSL certificate health</div>
+      <div class="sidebar-rule">Endpoints: www, api, merchant, ops (per environment)</div>
+      <div class="sidebar-rule-note">If an endpoint fails from 2+ regions, an alert fires immediately. This catches DNS issues, certificate expiry, and full outages before customers report them.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Alert policies</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Error rate: alert if 5xx > 1% over 5 minutes</div>
+      <div class="sidebar-rule">Latency: alert if p99 > 2s over 5 minutes</div>
+      <div class="sidebar-rule">Pod restarts: alert if > 3 restarts in 10 minutes</div>
+      <div class="sidebar-rule">Database: CPU > 80%, connections > 80% max</div>
       <div class="sidebar-rule">Disk: alert at 80% capacity</div>
-      <div class="sidebar-rule-note">Alerts route to PagerDuty or Slack depending on severity. Production alerts are P1. Staging alerts are informational only.</div>
+      <div class="sidebar-rule">Worker: job failure rate > 5% over 15 minutes</div>
+      <div class="sidebar-rule-note">Production alerts route to PagerDuty (P1). Staging alerts are Slack-only (informational). Sandbox alerts are disabled.</div>
     </div>
   </details>
 
@@ -45,9 +56,24 @@
       <div class="sidebar-rule">GKE cluster health (CPU, memory, pod count)</div>
       <div class="sidebar-rule">API latency and throughput per endpoint</div>
       <div class="sidebar-rule">Payout pipeline (volume, success rate, rail status)</div>
+      <div class="sidebar-rule">Worker queue depth and job processing rate</div>
       <div class="sidebar-rule">Database performance (queries, connections, replication lag)</div>
       <div class="sidebar-rule">Cost tracking per environment</div>
       <div class="sidebar-rule-note">Dashboards are Terraform-managed where possible. Payout pipeline dashboard is critical for operations — shows real-time flow of money through the system.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Cloud Profiler</div>
+  <p class="sidebar-desc">Continuous CPU and memory profiling in production. Low overhead (~1-2%), always-on.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Configuration</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Enabled on api, anton-engine, and worker</div>
+      <div class="sidebar-rule">CPU and heap profiling</div>
+      <div class="sidebar-rule">Flame graphs for identifying hot paths</div>
+      <div class="sidebar-rule">Compare profiles across deploys</div>
+      <div class="sidebar-rule-note">Free to use. The Go profiler agent is built into the binary. Particularly valuable for identifying performance regressions after deploys — compare flame graphs between versions.</div>
     </div>
   </details>
 
@@ -60,6 +86,18 @@
       <div class="sidebar-rule">mTLS certificate expiry monitoring</div>
       <div class="sidebar-rule">Traffic flow visualization in Anthos dashboard</div>
       <div class="sidebar-rule-note">Istio sidecar proxies automatically emit metrics and traces. Cloud Trace provides end-to-end request tracing across all services without application code changes.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Budget Alerts</div>
+  <details class="sidebar-accordion">
+    <summary>Per-environment cost tracking</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">Production: alert at 50%, 80%, 100% of monthly budget</div>
+      <div class="sidebar-rule">Staging: alert at 80%, 100%</div>
+      <div class="sidebar-rule">Sandbox: alert at 100%</div>
+      <div class="sidebar-rule">Credit burn rate tracked across all projects</div>
+      <div class="sidebar-rule-note">With $225K in GCP credits, tracking burn rate is critical to maximize runway. Budget alerts notify via Slack and email. Unexpected spikes (runaway autoscaling, misconfigured logging) are caught before they burn through credits.</div>
     </div>
   </details>
 </div>
