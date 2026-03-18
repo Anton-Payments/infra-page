@@ -14,6 +14,19 @@ cat > "$OUT" << 'HTMLHEAD'
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anton Payments — GKE Infrastructure Architecture</title>
+
+<!-- OpenGraph -->
+<meta property="og:title" content="Anton Payments — Infrastructure Architecture">
+<meta property="og:description" content="Multi-environment GKE architecture on Google Cloud Platform. Edge, compute, data, CI/CD, and observability layers.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://anton-payments.github.io/infra-page/">
+<meta property="og:site_name" content="Anton Payments">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Anton Payments — Infrastructure Architecture">
+<meta name="twitter:description" content="Multi-environment GKE architecture on Google Cloud Platform.">
+
 <link href="https://api.fontshare.com/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
