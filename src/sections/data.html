@@ -7,7 +7,7 @@
         <span class="tier-meta">Private IP only &middot; No public endpoints</span>
       </div>
       <div class="services-row">
-        <div class="svc" style="max-width:240px;">
+        <div class="svc">
           <div class="svc-name">Cloud SQL</div>
           <div class="svc-detail">PostgreSQL 16 &middot; Shared DB</div>
           <div class="svc-tags">
@@ -25,6 +25,16 @@
             <span class="tag tag-red">Private IP</span>
             <span class="tag tag-red">AUTH + TLS</span>
             <span class="tag tag-red" id="redis-ha-tag">Read replicas</span>
+          </div>
+        </div>
+
+        <div class="svc">
+          <div class="svc-name">Basis Theory</div>
+          <div class="svc-detail">Tokenization vault &middot; SaaS</div>
+          <div class="svc-tags">
+            <span class="tag tag-purple">PII vault</span>
+            <span class="tag tag-purple">Card vault</span>
+            <span class="tag tag-purple">Per-merchant isolation</span>
           </div>
         </div>
 
@@ -47,10 +57,9 @@
         </div>
       </div>
       <div class="tier-note">
-        <strong>Zero public surface.</strong> All data services on VPC private networking only. Cloud SQL Auth Proxy runs as a sidecar in api and anton-engine pods. Both services share the same PostgreSQL database to eliminate inter-service data transfer latency.
+        <strong>Zero public surface.</strong> All GCP data services on VPC private networking only. Cloud SQL Auth Proxy runs as a sidecar in api, anton-engine, and worker pods. All three share the same PostgreSQL database. Basis Theory is an external SaaS — the only service that holds raw PII and card data. The core database stores only BT token references, never plaintext sensitive data. See Architecture Notes for details.
       </div>
     </div>
 
     <!-- ════════ DIVIDER ════════ -->
     <div class="divider"></div>
-

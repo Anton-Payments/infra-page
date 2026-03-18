@@ -1,6 +1,6 @@
 <div class="sidebar-section">
   <div class="sidebar-title">Cloud SQL (PostgreSQL 16)</div>
-  <p class="sidebar-desc">Shared database between API and Anton Engine for zero-latency data access. Private IP only, no public endpoint.</p>
+  <p class="sidebar-desc">Shared database between API, Anton Engine, and Worker for zero-latency data access. Private IP only, no public endpoint.</p>
 
   <details class="sidebar-accordion">
     <summary>High availability</summary>
@@ -26,7 +26,7 @@
   <details class="sidebar-accordion">
     <summary>Connection security</summary>
     <div class="accordion-body">
-      <div class="sidebar-rule">Cloud SQL Auth Proxy as sidecar in api and anton-engine pods</div>
+      <div class="sidebar-rule">Cloud SQL Auth Proxy as sidecar in api, anton-engine, and worker pods</div>
       <div class="sidebar-rule">SSL required for all connections</div>
       <div class="sidebar-rule">Private IP within VPC, no public endpoint</div>
       <div class="sidebar-rule">IAM database authentication via Workload Identity</div>
@@ -46,6 +46,31 @@
       <div class="sidebar-rule">AUTH + TLS enforced on all tiers</div>
       <div class="sidebar-rule">Private IP only, VPC peering</div>
       <div class="sidebar-rule-note">Standard tier provides automatic failover. Basic tier is single-node with no persistence guarantees, acceptable for non-production. Redis data is ephemeral by design.</div>
+    </div>
+  </details>
+
+  <div class="sidebar-title" style="margin-top: 20px;">Basis Theory (Tokenization)</div>
+  <p class="sidebar-desc">External SaaS vault. The only system that stores raw PII and card data. Core database holds only token references.</p>
+
+  <details class="sidebar-accordion">
+    <summary>Vault architecture</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">/pii vault — names, addresses, identity documents</div>
+      <div class="sidebar-rule">/card vault — PANs, CVVs, card data</div>
+      <div class="sidebar-rule">Per-merchant isolation — one merchant cannot access another's tokens</div>
+      <div class="sidebar-rule">Client-side SHA-256 fingerprinting for deduplication</div>
+      <div class="sidebar-rule-note">Foundational to PCI DSS compliance. Satisfies PCI DSS Req 3.4 (render PAN unreadable) and Req 3.5 (protect cryptographic keys). Raw sensitive data never touches the Anton database.</div>
+    </div>
+  </details>
+
+  <details class="sidebar-accordion">
+    <summary>Access pattern</summary>
+    <div class="accordion-body">
+      <div class="sidebar-rule">API tokenizes on ingest, detokenizes on payout submission</div>
+      <div class="sidebar-rule">Merchant portal reads tokenized display values only</div>
+      <div class="sidebar-rule">Operations portal can view masked PII for support</div>
+      <div class="sidebar-rule">Worker detokenizes for rail submission and compliance screening</div>
+      <div class="sidebar-rule-note">Detokenization is audited. Every access is logged with who, what, when. BT API keys are stored in Secret Manager and scoped per-service via Workload Identity.</div>
     </div>
   </details>
 
