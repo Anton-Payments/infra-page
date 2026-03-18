@@ -67,6 +67,27 @@
   .layout-sidebar::-webkit-scrollbar-track { background: transparent; }
   .layout-sidebar::-webkit-scrollbar-thumb { background: var(--border-default); border-radius: 3px; }
 
+  /* ── Sidebar header ── */
+  .sidebar-header {
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 1.8px; color: var(--text-muted);
+    margin-bottom: 16px; padding-bottom: 0;
+  }
+
+  /* ── Vertical divider between main and sidebar ── */
+  .layout-row {
+    position: relative;
+  }
+  .layout-row::before {
+    content: '';
+    position: absolute;
+    left: calc(100% - 280px - 12px);
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-subtle);
+  }
+
   /* ── Sidebar content ── */
   .sidebar-section {
     margin-bottom: 32px;

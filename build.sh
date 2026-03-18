@@ -48,6 +48,7 @@ echo '    </div>' >> "$OUT"    # close .layout-main
 
 # Sidebar column — all notes stacked
 echo '    <div class="layout-sidebar">' >> "$OUT"
+echo '      <div class="sidebar-header">Architecture Notes</div>' >> "$OUT"
 
 for section in "${SECTIONS[@]}"; do
   NOTES="$DIR/src/sections/${section}-notes.html"
